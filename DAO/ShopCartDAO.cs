@@ -8,15 +8,24 @@ using RefactorDemo.Models;
 
 namespace RefactorDemo.DAO
 {
-    public class ShoppingCart
+    public class ShopCartDAO: IShopCartDAO
     {
-
         // Create a list of products
         private List<Product> _products = new List<Product>();
 
-        public void GetProduct()
+        private readonly string connectionString;
+
+        // Constructor
+        public ShopCartDAO(string connString)
         {
-            
+            connectionString = connString;
+        }
+
+         
+
+        public Product GetProduct(int productId)
+        {
+            return null;
         }
 
         // For each product in product list, adds price properties and returns a sum of product prices
@@ -30,14 +39,16 @@ namespace RefactorDemo.DAO
             return price;
         }
 
+        // Add product to database
+        public void AddProduct(Product p)
+        {
+
+        }
+
 
         // Adds a product with corresponding name from database to the product list
-        public void AddProduct(string name)
+        public void AddProductToList(string name)
         {
-            // Path to database
-            string dbPath = new DirectoryInfo(@"..\..").FullName + @"\GroceryStore.mdf";
-            // Connection string
-            string connectionString = string.Format(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0}", dbPath);
             SqlConnection conn = new SqlConnection(connectionString);
 
             // Grab product with corresponding name from database
@@ -56,12 +67,14 @@ namespace RefactorDemo.DAO
             }
         }
 
-        public void UpdateProduct()
+        // Updates a product 
+        public void UpdateProduct(int productId)
         {
 
         }
 
-        public void DeleteProduct()
+        // Deletes a product
+        public void DeleteProduct(int productId)
         {
 
         }
