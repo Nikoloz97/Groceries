@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RefactorDemo
+namespace RefactorDemo.Models
 {
     public class Product
     {
