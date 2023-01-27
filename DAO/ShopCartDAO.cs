@@ -5,13 +5,18 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using RefactorDemo.Models;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RefactorDemo.DAO
 {
     public class ShopCartDAO: IShopCartDAO
     {
-        // Create a list of products
-        private List<Product> productsList = new List<Product>();
+        // Modifyable cart 
+        private List<Product> cart = new List<Product>();
+
+        // selection of all items in the database 
+        private List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
 
@@ -22,10 +27,10 @@ namespace RefactorDemo.DAO
         }
 
          
-
-        public Product GetProduct(int productId)
+    
+        public List<Product> GetCart()
         {
-            return null;
+            return cart;
         }
 
         // For each product in product list, adds price properties and returns a sum of product prices
@@ -33,22 +38,42 @@ namespace RefactorDemo.DAO
         {
             decimal price = 0;
 
-            foreach (Product p in productsList)
+            foreach (Product p in cart)
                 price += p.Price;
 
             return price;
         }
 
-        // Add product to database
-        public void AddProduct(Product p)
+        // Provides full selection of products from database
+        public List<Product> GetSelection()
         {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Product", conn);
 
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    Product product = CreateProductFromReader(dr);
+                    selection.Add(product);
+                }
+            }
+            return selection;
         }
 
 
-        // Adds a product with corresponding name from database to the product list
-        public void AddProductToList(string name)
+        // Adds a product corresponding to the name from database, and indicated amount, to the cart
+        public void AddToCart(string name, int amount)
         {
+            // If item is already in the cart, just increment the "amount" property 
+            Product productToAdd = cart.SingleOrDefault(x => x.Name == name);
+            if (productToAdd != null)
+            {
+                productToAdd.Amount += amount;
+            } 
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -60,26 +85,34 @@ namespace RefactorDemo.DAO
                 if (dr.Read())
                 {
                     Product product = CreateProductFromReader(dr);
-                    productsList.Add(product);
+                    product.Amount = amount;
+                    cart.Add(product);
                 }
 
             };
         }
 
-
-
-
-
-        // Updates a product 
-        public void UpdateProduct(int productId)
+        // Decreases the amount of an item from the cart
+        public void DecreaseFromCart(int productId, int amount)
         {
+            Product productToDec = cart.SingleOrDefault(x => x.Id == productId);
+            if (productToDec != null && productToDec.Amount > amount) {
+                productToDec.Amount -= amount;
+            }
+            else if (pro)
+            else if (productToDec != null)
+            {
+                Console.WriteLine("Woops, there is not item by that amount");
+            }
 
         }
 
-        // Deletes a product
-        public void DeleteProduct(int productId)
-        {
 
+        // Deletes a product from cart
+        public void DeleteFromCart(int productId)
+        {
+            Product productToRemove = cart.SingleOrDefault(x => x.Id == productId);
+            if (productToRemove != null) { cart.Remove(productToRemove); }
         }
 
 
@@ -90,7 +123,6 @@ namespace RefactorDemo.DAO
             product.Id = Convert.ToInt32(dr["Id"]);
             product.Name = Convert.ToString(dr["Name"]);
             product.Price = Convert.ToDecimal(dr["Price"]);
-
             return product;
         }
 

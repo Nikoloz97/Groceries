@@ -19,7 +19,7 @@ namespace RefactorDemo
 
 
         // TODO: Complete switch statement
-        public void RunMainMenu()
+        public void MainMenu()
         {
             // Main menu display
             Console.WriteLine("-------------------------------");
@@ -27,7 +27,7 @@ namespace RefactorDemo
             Console.WriteLine("-------------------------------");
             Console.WriteLine("Please select from the following options:");
             Console.WriteLine("1 - See groceries listing");
-            Console.WriteLine("2 - See current checkout price");
+            Console.WriteLine("2 - See what's in your cart");
             Console.WriteLine("0 - Exit");
             Console.WriteLine();
 

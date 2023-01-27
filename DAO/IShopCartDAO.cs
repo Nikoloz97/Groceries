@@ -9,13 +9,13 @@ namespace RefactorDemo.DAO
     public interface IShopCartDAO
     {
         // Gets a product from database
-        Product GetProduct(int productId);
+        Product_Selection GetProduct(int productId);
 
         decimal GetCheckoutPrice();
 
 
         // Adds product to database
-        void AddProduct(Product product);
+        void AddProduct(Product_Selection product);
 
         void AddProductToList(string name);
 
