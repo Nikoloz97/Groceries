@@ -11,11 +11,11 @@ namespace RefactorDemo.DAO
     public class ShopCartDAO: IShopCartDAO
     {
         // Create a list of products
-        private List<Product> _products = new List<Product>();
+        private List<Product> productsList = new List<Product>();
 
         private readonly string connectionString;
 
-        // Constructor
+        // Constructor (see program file) 
         public ShopCartDAO(string connString)
         {
             connectionString = connString;
@@ -33,7 +33,7 @@ namespace RefactorDemo.DAO
         {
             decimal price = 0;
 
-            foreach (Product p in _products)
+            foreach (Product p in productsList)
                 price += p.Price;
 
             return price;
@@ -49,23 +49,26 @@ namespace RefactorDemo.DAO
         // Adds a product with corresponding name from database to the product list
         public void AddProductToList(string name)
         {
-            SqlConnection conn = new SqlConnection(connectionString);
-
-            // Grab product with corresponding name from database
-            SqlCommand cmd = new SqlCommand(string.Format("SELECT * FROM Product WHERE Name = '{0}'", name), conn);
-            conn.Open();
-            SqlDataReader dr = cmd.ExecuteReader();
-
-            if (dr.Read())
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                _products.Add(new Product
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE Name = @name;", conn);
+                cmd.Parameters.AddWithValue("@name", name);
+
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                if (dr.Read())
                 {
-                    Id = dr.GetFieldValue<int>("Id"),
-                    Name = dr.GetFieldValue<string>("Name"),
-                    Price = dr.GetFieldValue<decimal>("Price")
-                });
-            }
+                    Product product = CreateProductFromReader(dr);
+                    productsList.Add(product);
+                }
+
+            };
         }
+
+
+
+
 
         // Updates a product 
         public void UpdateProduct(int productId)
@@ -77,6 +80,18 @@ namespace RefactorDemo.DAO
         public void DeleteProduct(int productId)
         {
 
+        }
+
+
+        private Product CreateProductFromReader(SqlDataReader dr)
+        {
+            Product product = new Product();
+
+            product.Id = Convert.ToInt32(dr["Id"]);
+            product.Name = Convert.ToString(dr["Name"]);
+            product.Price = Convert.ToDecimal(dr["Price"]);
+
+            return product;
         }
 
 

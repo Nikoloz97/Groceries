@@ -42,7 +42,8 @@ namespace RefactorDemo
                     break;
                 case 1:
                     Console.Clear();
-                    // TODO: Add groceries listing
+                    // TODO: Add groceries display
+
                     break;
 
                 case 2:
