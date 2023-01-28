@@ -12,10 +12,10 @@ namespace RefactorDemo.DAO
 {
     public class ShopCartDAO: IShopCartDAO
     {
-        // Modifyable cart 
+        // Modifyable cart list
         private List<Product> cart = new List<Product>();
 
-        // selection of all items in the database 
+        // Non-modifyable selection from database
         private List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
@@ -26,8 +26,6 @@ namespace RefactorDemo.DAO
             connectionString = connString;
         }
 
-         
-    
         public List<Product> GetCart()
         {
             return cart;
@@ -92,34 +90,41 @@ namespace RefactorDemo.DAO
             };
         }
 
-        // Decreases the amount of an item from the cart
-        public void DecreaseFromCart(int productId, int amount)
+        // Decreases item's amount property / removes item from cart 
+        public void RemoveFromCart(int productId, int amount)
         {
-            Product productToDec = cart.SingleOrDefault(x => x.Id == productId);
-            if (productToDec != null && productToDec.Amount > amount) {
-                productToDec.Amount -= amount;
-            }
-            else if (pro)
-            else if (productToDec != null)
+            Product product = cart.SingleOrDefault(x => x.Id == productId);
+
+            // If amount param is less than amount property, decrement by param value 
+            if (product.Amount > amount)
             {
-                Console.WriteLine("Woops, there is not item by that amount");
+                product.Amount -= amount;
             }
 
-        }
+            // else, if amount to decrease is equal to amount property, remove the item from cart 
+            else if (product.Amount == amount)
+            {
+                cart.Remove(product);
 
+            }
 
-        // Deletes a product from cart
-        public void DeleteFromCart(int productId)
-        {
-            Product productToRemove = cart.SingleOrDefault(x => x.Id == productId);
-            if (productToRemove != null) { cart.Remove(productToRemove); }
+            // else, if amount to decrease is greater than amount property, display error message
+            else if (product.Amount < amount)
+            {
+                Console.WriteLine("Woops - you can't decrease by more than what's in your cart. Try again.");
+            }
+
+            // else, if product cannot be found, display error message
+            else if (product == null)
+            {
+                Console.WriteLine("Woops - couldn't find item. Try again.");
+            }
         }
 
 
         private Product CreateProductFromReader(SqlDataReader dr)
         {
             Product product = new Product();
-
             product.Id = Convert.ToInt32(dr["Id"]);
             product.Name = Convert.ToString(dr["Name"]);
             product.Price = Convert.ToDecimal(dr["Price"]);
