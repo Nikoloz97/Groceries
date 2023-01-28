@@ -6,24 +6,22 @@ using System.Text;
 
 namespace RefactorDemo.DAO
 {
+    // Reason its doesn't include sql in interface name = want it to be applied in non-sql DAOs as well 
     public interface IShopCartDAO
     {
-        // Gets a product from database
-        Product_Selection GetProduct(int productId);
+
+        List<Product> GetCart();
 
         decimal GetCheckoutPrice();
 
+        List<Product> GetSelection();
 
-        // Adds product to database
-        void AddProduct(Product_Selection product);
 
-        void AddProductToList(string name);
+        // Add item or item's amount property to cart
+        void AddToCart(string name, int amount);
 
-        // Updates product from database
-        void UpdateProduct(int productId);
-
-        // Deletes product from database
-        void DeleteProduct(int productId);
+        //Remove item or item's amount property to cart
+        void RemoveFromCart(string name, int amount);
 
 
     }

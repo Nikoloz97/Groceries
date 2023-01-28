@@ -17,11 +17,7 @@ namespace RefactorDemo
             string connectionString = string.Format(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0}", dbPath);
 
             // Place connection string DAO constructor
-            IShopCartDAO shoppingCartDao = new ShopCartDAO(connectionString);
-
-            // Hard coded these products (to see if it works) 
-            shoppingCartDao.AddProductToList("Milk");
-            shoppingCartDao.AddProductToList("Eggs");
+            IShopCartDAO shoppingCartDao = new ShopCartSqlDAO(connectionString);
 
 
             UI_Main ui = new UI_Main(shoppingCartDao);

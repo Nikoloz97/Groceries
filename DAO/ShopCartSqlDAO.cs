@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace RefactorDemo.DAO
 {
-    public class ShopCartDAO: IShopCartDAO
+    public class ShopCartSqlDAO: IShopCartDAO
     {
         // Modifyable cart list
         private List<Product> cart = new List<Product>();
@@ -21,7 +21,7 @@ namespace RefactorDemo.DAO
         private readonly string connectionString;
 
         // Constructor (see program file) 
-        public ShopCartDAO(string connString)
+        public ShopCartSqlDAO(string connString)
         {
             connectionString = connString;
         }
@@ -36,8 +36,8 @@ namespace RefactorDemo.DAO
         {
             decimal price = 0;
 
-            foreach (Product p in cart)
-                price += p.Price;
+            foreach (Product product in cart)
+                price += (product.Price * product.Amount);
 
             return price;
         }
@@ -66,12 +66,16 @@ namespace RefactorDemo.DAO
         public void AddToCart(string name, int amount)
         {
             // If item is already in the cart, just increment the "amount" property 
-            Product productToAdd = cart.SingleOrDefault(x => x.Name == name);
+            Product productToAdd = cart.SingleOrDefault(product => product.Name == name);
             if (productToAdd != null)
             {
                 productToAdd.Amount += amount;
             } 
 
+            // Else, add to cart 
+            // TODO: get rid of sql command? We already have the selection
+            else { 
+            
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -88,12 +92,15 @@ namespace RefactorDemo.DAO
                 }
 
             };
+            
+            }
+
         }
 
         // Decreases item's amount property / removes item from cart 
-        public void RemoveFromCart(int productId, int amount)
+        public void RemoveFromCart(string productName, int amount)
         {
-            Product product = cart.SingleOrDefault(x => x.Id == productId);
+            Product product = cart.SingleOrDefault(product => product.Name == productName);
 
             // If amount param is less than amount property, decrement by param value 
             if (product.Amount > amount)
