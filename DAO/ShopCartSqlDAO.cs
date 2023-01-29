@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace RefactorDemo.DAO
 {
+    // TODO: Get rid of Id property for product altogether? (is it necessary - name is already unique)
     public class ShopCartSqlDAO: IShopCartDAO
     {
         // Modifyable cart list
@@ -19,6 +20,9 @@ namespace RefactorDemo.DAO
         private List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
+
+        // Monitor if cart is empty (if true, user can leave without going to checkout)
+        private bool isCartEmpty = true;
 
         // Constructor (see program file) 
         public ShopCartSqlDAO(string connString)
@@ -62,61 +66,60 @@ namespace RefactorDemo.DAO
         }
 
 
-        // Adds a product corresponding to the name from database, and indicated amount, to the cart
-        public void AddToCart(string name, int amount)
+        // Adds a product corresponding to the name from database, with its indicated amount, to the cart
+        public void AddToCart(Product_Transfer productToAdd)
         {
             // If item is already in the cart, just increment the "amount" property 
-            Product productToAdd = cart.SingleOrDefault(product => product.Name == name);
-            if (productToAdd != null)
+            Product cartProduct = cart.SingleOrDefault(x => x.Name == productToAdd.Name);
+
+            if (cartProduct != null)
             {
-                productToAdd.Amount += amount;
+                cartProduct.Amount += productToAdd.Amount;
             } 
 
-            // Else, add to cart 
-            // TODO: get rid of sql command? We already have the selection
-            else { 
-            
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Product WHERE Name = @name;", conn);
-                cmd.Parameters.AddWithValue("@name", name);
+            // Else, add the selection to cart 
+            else {
 
-                SqlDataReader dr = cmd.ExecuteReader();
+            // Get corresponding item from selection
+             Product product = GetProductFromSelection(productToAdd);
 
-                if (dr.Read())
-                {
-                    Product product = CreateProductFromReader(dr);
-                    product.Amount = amount;
-                    cart.Add(product);
-                }
+             cart.Add(product);
 
-            };
-            
+             // Cart is not empty, so set to false
+             isCartEmpty = false;
+
             }
 
         }
 
         // Decreases item's amount property / removes item from cart 
-        public void RemoveFromCart(string productName, int amount)
+        public void RemoveFromCart(Product_Transfer productToRemove)
         {
-            Product product = cart.SingleOrDefault(product => product.Name == productName);
+            // Get corresponding cart item
+            Product product = GetProductFromCart(productToRemove);
 
             // If amount param is less than amount property, decrement by param value 
-            if (product.Amount > amount)
+            if (product.Amount > productToRemove.Amount)
             {
-                product.Amount -= amount;
+                product.Amount -= productToRemove.Amount;
             }
 
             // else, if amount to decrease is equal to amount property, remove the item from cart 
-            else if (product.Amount == amount)
+            else if (product.Amount == productToRemove.Amount)
             {
                 cart.Remove(product);
+
+                // Check if user has removed everything from cart
+                if (cart == null)
+                {
+                    isCartEmpty = true;
+
+                }
 
             }
 
             // else, if amount to decrease is greater than amount property, display error message
-            else if (product.Amount < amount)
+            else if (product.Amount < productToRemove.Amount)
             {
                 Console.WriteLine("Woops - you can't decrease by more than what's in your cart. Try again.");
             }
@@ -139,7 +142,26 @@ namespace RefactorDemo.DAO
         }
 
 
+        // Get product from selection list (used to add to cart)
+        private Product GetProductFromSelection(Product_Transfer productMod)
+        {
+            Product productFromSelection = selection.SingleOrDefault(x => x.Name == productMod.Name);
 
-       
+            return productFromSelection;
+        }
+
+        // Get product from cart list (used to remove from cart)
+        private Product GetProductFromCart(Product_Transfer productMod)
+        {
+            Product productFromSelection = cart.SingleOrDefault(x => x.Name == productMod.Name);
+
+            return productFromSelection;
+        }
+
+
+
+
+
+
     }
 }

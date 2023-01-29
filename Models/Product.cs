@@ -6,6 +6,8 @@ namespace RefactorDemo.Models
 {
     public class Product
     {
+        // Products in the cart/selection list
+
         // Created getters/setters
         public int Id { get; set; }
         public string Name { get; set; }

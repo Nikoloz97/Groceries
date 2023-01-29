@@ -18,10 +18,10 @@ namespace RefactorDemo.DAO
 
 
         // Add item or item's amount property to cart
-        void AddToCart(string name, int amount);
+        void AddToCart(Product_Transfer product);
 
         //Remove item or item's amount property to cart
-        void RemoveFromCart(string name, int amount);
+        void RemoveFromCart(Product_Transfer product);
 
 
     }

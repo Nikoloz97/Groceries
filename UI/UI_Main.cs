@@ -1,16 +1,20 @@
 ﻿using RefactorDemo.DAO;
 using RefactorDemo.Models;
+using RefactorDemo.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace RefactorDemo
 {
     // Main user interface 
-    internal class UI_Main
+    public class UI_Main
     {
         private readonly IShopCartDAO shoppingCartDao;
+        UI_Helper helper = new UI_Helper();
 
         // Constructor
         public UI_Main(IShopCartDAO shoppingCartDao)
@@ -30,7 +34,7 @@ namespace RefactorDemo
             Console.WriteLine("1 - See groceries menu");
             Console.WriteLine("2 - See what's in your cart");
             Console.WriteLine("3 - Go to checkout");
-            Console.WriteLine("0 - Exit");
+            DisplayExitOption();
             Console.WriteLine();
 
             Console.Write("What's your choice?: ");
@@ -40,6 +44,7 @@ namespace RefactorDemo
             switch (userInput)
             {
                 case 0:
+                    ExitWithoutCheckout();
                     Environment.Exit(0);
                     break;
                 case 1:
@@ -87,30 +92,35 @@ namespace RefactorDemo
             switch (userinput) 
             {
                 case 1:
-                    AddToCart();
+                    AddToCartPrompt();
                     GenericMenu();
                     break;
                 case 2:
-                    Console.Write("What would you like to remove?: ");
-                    string itemToRemove = Console.ReadLine();
-                    C
+                    MainMenu();
                     break;
             }
         }
 
-        public void AddToCart()
+        public void AddToCartPrompt()
         {
             string continueAdding;
 
             do
             {
+                Product_Transfer productToRemove = new Product_Transfer();
+
                 Console.Write("What would you like to add?: ");
                 string itemToAdd = Console.ReadLine();
+
+                productToRemove.Name = itemToAdd;
+
 
                 Console.Write("How many?: ");
                 int amountToAdd = Convert.ToInt32(Console.ReadLine());
 
-                shoppingCartDao.AddToCart(itemToAdd, amountToAdd);
+                productToRemove.Amount = amountToAdd;
+
+                shoppingCartDao.AddToCart(productToRemove);
 
                 Console.Write("Would you like to add anything else? (y/n) ");
                 continueAdding = Console.ReadLine().ToLower();
@@ -118,6 +128,34 @@ namespace RefactorDemo
             } while (continueAdding == "y");
 
          
+        }
+
+        public void RemoveFromCartPrompt()
+        {
+            string continueRemoving;
+
+            do
+            {
+                Product_Transfer productToRemove = new Product_Transfer();
+
+                Console.Write("What would you like to remove?: ");
+                string itemToRemove = Console.ReadLine();
+
+                productToRemove.Name = itemToRemove;
+
+
+                Console.Write("How many?: ");
+                int amountToRemove = Convert.ToInt32(Console.ReadLine());
+
+                productToRemove.Amount = amountToRemove;
+
+                shoppingCartDao.AddToCart(productToRemove);
+
+                Console.Write("Would you like to remove anything else? (y/n) ");
+                continueRemoving = Console.ReadLine().ToLower();
+
+            } while (continueRemoving == "y");
+
         }
 
         public void GenericMenu()
@@ -197,6 +235,7 @@ namespace RefactorDemo
 
                     Console.WriteLine("What item would you like to decrease the amount of?: ");
                     string itemToDecrease = Console.ReadLine();
+                    ProperCartItemName(itemToDecrease);
 
                     Console.WriteLine("How much would you like to add?: ");
                     int decAmount = Convert.ToInt32(Console.ReadLine());
@@ -229,6 +268,59 @@ namespace RefactorDemo
             Console.WriteLine($"Your final total: {currentTotal}");
         }
 
-     
+
+        public void ExitWithoutCheckout()
+        {
+            decimal checkoutPrice = shoppingCartDao.GetCheckoutPrice();
+
+            if (checkoutPrice == 0)
+            {
+                DisplayExit();
+            }
+        }
+
+
+        // User can leave if their checkout price is zero
+        public void DisplayExitOption()
+        {
+            if (isCheckoutPriceZero)
+            {
+                Console.WriteLine("0 - Didn't like anything? Exit here");
+            }
+
+        }
+
+        public void DisplayExit()
+        {
+            Console.WriteLine("Thanks for choosing Nick's Grocery store - come again!");
+        }
+
+
+
+
+        // TODO: Move everything below to UI_Helper (once null situation straightened out...) 
+        public string ProperCartItemName(string userInput)
+        {
+            
+            List<Product> cart = shoppingCartDao.GetCart();
+
+            Product cartItemName = cart.SingleOrDefault(product => product.Name == userInput);
+
+            while (cartItemName == null)
+            {
+
+                Console.WriteLine("Invalid item name. Try again: ");
+                userInput = Console.ReadLine();
+                cartItemName = cart.SingleOrDefault(product => product.Name == userInput);
+            }
+
+            return cartItemName.Name;
+        }
+
+
+
+
+
+
     }
 }
