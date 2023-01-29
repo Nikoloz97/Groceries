@@ -46,7 +46,7 @@ namespace RefactorDemo
                     Console.Clear();
                     GroceryDisplayMain();
                     Console.WriteLine();
-                    GroceryDisplayMenu();
+                    GroceryDisplayOptions();
                     break;
 
                 case 2:
@@ -63,23 +63,24 @@ namespace RefactorDemo
         public void GroceryDisplayMain()
         {
             List<Product> selection = shoppingCartDao.GetSelection();
-
-            Console.WriteLine("Nick's grocery menu: ");
-            Console.WriteLine("Name --- Price");
+            Console.WriteLine("----------------------");
+            Console.WriteLine("| Nick's Grocery Menu |");
+            Console.WriteLine("----------------------");
+            Console.WriteLine("|   Name   |   Price  |");
 
             foreach (Product product in selection)
             {
-                Console.WriteLine($"{product.Name} - {product.Price}");
+                Console.WriteLine($"|   {product.Name}   |   {product.Price}  |");
             }
+            Console.WriteLine("------------------");
 
         }
 
-        public void GroceryDisplayMenu()
+        public void GroceryDisplayOptions()
         {
             Console.WriteLine("Please choose from the following options: ");
             Console.WriteLine("1 - Add item to cart");
-            Console.WriteLine("2 - Remove item from cart");
-            Console.WriteLine("3 - Return to main menu");
+            Console.WriteLine("2 - Return to main menu");
 
             int userinput = Convert.ToInt32(Console.ReadLine());  
 
@@ -91,6 +92,8 @@ namespace RefactorDemo
                     break;
                 case 2:
                     Console.Write("What would you like to remove?: ");
+                    string itemToRemove = Console.ReadLine();
+                    C
                     break;
             }
         }
@@ -187,7 +190,7 @@ namespace RefactorDemo
                     Console.WriteLine("How much would you like to add?: ");
                     int addAmount = Convert.ToInt32(Console.ReadLine());
 
-                    IncProdAmount(itemToIncrease, addAmount);
+                    RemoveFromCart(itemToIncrease, addAmount);
 
                     break;
                 case 3:
@@ -198,7 +201,7 @@ namespace RefactorDemo
                     Console.WriteLine("How much would you like to add?: ");
                     int decAmount = Convert.ToInt32(Console.ReadLine());
 
-                    IncProdAmount(itemToDecrease, decAmount);
+                    AddToCart(itemToDecrease, decAmount);
 
                     break;
                 case 4:
@@ -209,13 +212,13 @@ namespace RefactorDemo
 
         }
 
-        public void IncProdAmount(string itemName, int addAmount)
+        public void AddToCart(string itemName, int addAmount)
         {
             shoppingCartDao.AddToCart(itemName, addAmount); 
 
         }
 
-        public void DecProdAmount(string itemName, int addAmount)
+        public void RemoveFromCart(string itemName, int addAmount)
         {
             shoppingCartDao.RemoveFromCart(itemName, addAmount);
         }
