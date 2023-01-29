@@ -103,6 +103,7 @@ namespace RefactorDemo
             Console.WriteLine("1 - Add item to cart");
             Console.WriteLine("2 - Return to main menu");
 
+            // TODO: add properCartNameChecker
             int userinput = Convert.ToInt32(Console.ReadLine());  
 
             switch (userinput) 
@@ -314,7 +315,7 @@ namespace RefactorDemo
             while (cartItem == null)
             {
 
-                Console.WriteLine("Invalid item name. Try again: ");
+                Console.Write("Invalid item name. Try again: ");
                 userInput = Console.ReadLine();
                 cartItem = cart.SingleOrDefault(product => product.Name == userInput);
             }
@@ -332,7 +333,7 @@ namespace RefactorDemo
 
             while (selectionItem == null)
             {
-                Console.WriteLine("Invalid item name. Try again: ");
+                Console.Write("Invalid item name. Try again: ");
                 userInput = Console.ReadLine();
                 selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
             }
@@ -346,20 +347,21 @@ namespace RefactorDemo
         // Checks if user's number input is valid 
         public int ProperValChecker(string userInput, int upperRangeInclusive)
         {
-
-            bool isParsed = int.TryParse(userInput, out int parsedValue);
-
             int properValue = 0;
 
             while (properValue == 0)
             {
+                bool isParsed = int.TryParse(userInput, out int parsedValue);
+
                 if (!isParsed)
                 {
-                    Console.WriteLine("Input was not a number. Please try again.");
+                    Console.Write("Input was not a number. Please try again: ");
+                    userInput = Console.ReadLine();
                 }
                 else if (parsedValue > upperRangeInclusive)
                 {
-                    Console.WriteLine("Input was not a valid number. Please try again.");
+                    Console.Write("Input was not a valid number. Please try again: ");
+                    userInput = Console.ReadLine();
                 }
                 else
                 {
