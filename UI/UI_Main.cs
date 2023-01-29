@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 
 namespace RefactorDemo
 {
@@ -31,29 +32,31 @@ namespace RefactorDemo
             Console.WriteLine("Welcome to Nick's grocery store!");
             Console.WriteLine("-------------------------------");
             Console.WriteLine("Please select from the following options:");
-            Console.WriteLine("1 - See groceries menu");
-            Console.WriteLine("2 - See what's in your cart");
-            Console.WriteLine("3 - Go to checkout");
-            DisplayExitOption();
+            Console.WriteLine("1 - Groceries menu");
+            Console.WriteLine("2 - Cart/Checkout");
+            DisplayFastExitOption();
             Console.WriteLine();
 
             Console.Write("What's your choice?: ");
 
             string userInput = Console.ReadLine();
 
-            int parsedValue;
+            int properInputVal;
 
-            bool isParsed = int.TryParse(userInput, out parsedValue);
-
-            ProperValThree(isParsed, parsedValue);
+            if (shoppingCartDao.GetIsCartEmpty())
+            {
+                // Fast exit option (empty cart)
+                properInputVal = ProperValChecker(userInput, 3);
+            }
+            else
+            {
+                // No fast exit option (cart not empty)
+                properInputVal = ProperValChecker(userInput, 2);
+            }
 
  
-            switch (userInput)
+            switch (properInputVal)
             {
-                case 0:
-                    ExitWithoutCheckout();
-                    Environment.Exit(0);
-                    break;
                 case 1:
                     Console.Clear();
                     GroceryDisplayMain();
@@ -69,6 +72,11 @@ namespace RefactorDemo
                     Console.WriteLine();
                     DisplayCartOptions();
                     break;
+                case 3:
+                    Console.Clear();
+                    DisplayExit();
+                    break;
+                   
             }
         }
 
@@ -169,8 +177,8 @@ namespace RefactorDemo
         public void GenericMenu()
         {
             Console.WriteLine("Please choose from the following options: ");
-            Console.WriteLine("1 - go to cart/checkout");
-            Console.WriteLine("2 - go to main menu");
+            Console.WriteLine("1 - Cart/Checkout");
+            Console.WriteLine("2 - Main Menu");
 
             int userInput = Convert.ToInt32(Console.ReadLine());    
 
@@ -261,7 +269,7 @@ namespace RefactorDemo
         }
 
 
-        public void ExitWithoutCheckout()
+       /* public void ExitWithoutCheckout()
         {
             decimal checkoutPrice = shoppingCartDao.GetCheckoutPrice();
 
@@ -269,15 +277,15 @@ namespace RefactorDemo
             {
                 DisplayExit();
             }
-        }
+        }*/
 
 
         // User can leave if their checkout price is zero
-        public void DisplayExitOption()
+        public void DisplayFastExitOption()
         {
             if (shoppingCartDao.GetIsCartEmpty())
             {
-                Console.WriteLine("0 - Didn't like anything? Exit here");
+                Console.WriteLine("3 - Don't have anything in the cart? Exit here");
             }
 
         }
@@ -285,31 +293,84 @@ namespace RefactorDemo
         public void DisplayExit()
         {
             Console.WriteLine("Thanks for choosing Nick's Grocery store - come again!");
+            Thread.Sleep(300);
+            Environment.Exit(0);
         }
 
 
 
 
         // TODO: Move everything below to UI_Helper (once null situation straightened out...) 
-        public string ProperCartItemName(string userInput)
+
+
+        // Checks if user's cart name input is valid
+        public string ProperNameChecker_Cart(string userInput)
         {
             
             List<Product> cart = shoppingCartDao.GetCart();
 
-            Product cartItemName = cart.SingleOrDefault(product => product.Name == userInput);
+            Product cartItem = cart.SingleOrDefault(product => product.Name == userInput);
 
-            while (cartItemName == null)
+            while (cartItem == null)
             {
 
                 Console.WriteLine("Invalid item name. Try again: ");
                 userInput = Console.ReadLine();
-                cartItemName = cart.SingleOrDefault(product => product.Name == userInput);
+                cartItem = cart.SingleOrDefault(product => product.Name == userInput);
             }
 
-            return cartItemName.Name;
+            return cartItem.Name;
+        }
+
+        // Checks if user's selection name input is valid
+        public string ProperNameChecker_Selection(string userInput)
+        {
+
+            List<Product> selection = shoppingCartDao.GetSelection();
+
+            Product selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
+
+            while (selectionItem == null)
+            {
+                Console.WriteLine("Invalid item name. Try again: ");
+                userInput = Console.ReadLine();
+                selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
+            }
+
+            return selectionItem.Name;
         }
 
 
+
+
+        // Checks if user's number input is valid 
+        public int ProperValChecker(string userInput, int upperRangeInclusive)
+        {
+
+            bool isParsed = int.TryParse(userInput, out int parsedValue);
+
+            int properValue = 0;
+
+            while (properValue == 0)
+            {
+                if (!isParsed)
+                {
+                    Console.WriteLine("Input was not a number. Please try again.");
+                }
+                else if (parsedValue > upperRangeInclusive)
+                {
+                    Console.WriteLine("Input was not a valid number. Please try again.");
+                }
+                else
+                {
+                    properValue = parsedValue;
+                }
+
+            }
+
+            return properValue;
+
+        }
 
 
 
