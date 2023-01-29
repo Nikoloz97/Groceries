@@ -30,10 +30,17 @@ namespace RefactorDemo.DAO
             connectionString = connString;
         }
 
+        public bool GetIsCartEmpty()
+        {
+            return isCartEmpty;
+        }
+
         public List<Product> GetCart()
         {
             return cart;
         }
+
+   
 
         // For each product in product list, adds price properties and returns a sum of product prices
         public decimal GetCheckoutPrice()
@@ -83,6 +90,10 @@ namespace RefactorDemo.DAO
             // Get corresponding item from selection
              Product product = GetProductFromSelection(productToAdd);
 
+            // Increment the amount property
+             product.Amount += productToAdd.Amount;
+
+            // Add to cart
              cart.Add(product);
 
              // Cart is not empty, so set to false

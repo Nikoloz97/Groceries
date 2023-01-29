@@ -9,7 +9,7 @@ namespace RefactorDemo.DAO
     // Reason its doesn't include sql in interface name = want it to be applied in non-sql DAOs as well 
     public interface IShopCartDAO
     {
-
+        bool GetIsCartEmpty();
         List<Product> GetCart();
 
         decimal GetCheckoutPrice();

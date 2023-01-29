@@ -39,8 +39,15 @@ namespace RefactorDemo
 
             Console.Write("What's your choice?: ");
 
-            int userInput = Convert.ToInt32(Console.ReadLine());
+            string userInput = Console.ReadLine();
 
+            int parsedValue;
+
+            bool isParsed = int.TryParse(userInput, out parsedValue);
+
+            ProperValThree(isParsed, parsedValue);
+
+ 
             switch (userInput)
             {
                 case 0:
@@ -72,6 +79,7 @@ namespace RefactorDemo
             Console.WriteLine("| Nick's Grocery Menu |");
             Console.WriteLine("----------------------");
             Console.WriteLine("|   Name   |   Price  |");
+            Console.WriteLine("-----------------------");
 
             foreach (Product product in selection)
             {
@@ -205,9 +213,9 @@ namespace RefactorDemo
         public void DisplayCartOptions()
         {
             Console.WriteLine("Please choose from the following options: ");
-            Console.WriteLine("1 - Add new items to cart (go to groceries menu)");
+            Console.WriteLine("1 - Add new item (Groceries menu)");
             Console.WriteLine("2 - Add more of an item");
-            Console.WriteLine("3 - Remove item from cart");
+            Console.WriteLine("3 - Decrease/remove item from cart");
             Console.WriteLine("4 - Go to checkout");
 
             Console.WriteLine();
@@ -218,30 +226,14 @@ namespace RefactorDemo
 
             switch (userInput) {
                 case 1:
-                    MainMenu();
+                    GroceryDisplayMain();
+                    GroceryDisplayOptions();
                     break;
                 case 2:
-
-                    Console.WriteLine("What item would you like to increase the amount of?: ");
-                    string itemToIncrease = Console.ReadLine();
-
-                    Console.WriteLine("How much would you like to add?: ");
-                    int addAmount = Convert.ToInt32(Console.ReadLine());
-
-                    RemoveFromCart(itemToIncrease, addAmount);
-
+                    AddToCartPrompt();
                     break;
                 case 3:
-
-                    Console.WriteLine("What item would you like to decrease the amount of?: ");
-                    string itemToDecrease = Console.ReadLine();
-                    ProperCartItemName(itemToDecrease);
-
-                    Console.WriteLine("How much would you like to add?: ");
-                    int decAmount = Convert.ToInt32(Console.ReadLine());
-
-                    AddToCart(itemToDecrease, decAmount);
-
+                    RemoveFromCartPrompt();
                     break;
                 case 4:
                     CheckoutDisplay();
@@ -251,15 +243,15 @@ namespace RefactorDemo
 
         }
 
-        public void AddToCart(string itemName, int addAmount)
+        public void AddToCart(Product_Transfer productToAdd)
         {
-            shoppingCartDao.AddToCart(itemName, addAmount); 
+            shoppingCartDao.AddToCart(productToAdd); 
 
         }
 
-        public void RemoveFromCart(string itemName, int addAmount)
+        public void RemoveFromCart(Product_Transfer productToRemove)
         {
-            shoppingCartDao.RemoveFromCart(itemName, addAmount);
+            shoppingCartDao.RemoveFromCart(productToRemove);
         }
 
         public void CheckoutDisplay()
@@ -283,7 +275,7 @@ namespace RefactorDemo
         // User can leave if their checkout price is zero
         public void DisplayExitOption()
         {
-            if (isCheckoutPriceZero)
+            if (shoppingCartDao.GetIsCartEmpty())
             {
                 Console.WriteLine("0 - Didn't like anything? Exit here");
             }
