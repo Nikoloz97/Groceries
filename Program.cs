@@ -17,14 +17,13 @@ namespace RefactorDemo
             // Connection string
             string connectionString = string.Format(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={0}", dbPath);
 
-            // Place connection string DAO constructor
+            // Place connection string -> DAO constructor
             IShopCartDAO shoppingCartDao = new ShopCartSqlDAO(connectionString);
 
-
+            // Call main UI constructor
             UI_Main uiMain = new UI_Main(shoppingCartDao);
 
-          
-
+            // Run UI's main menu
             uiMain.MainMenu();
 
         }

@@ -69,7 +69,7 @@ namespace RefactorDemo
                     Console.Clear(); 
                     DisplayCart();
                     Console.WriteLine();
-                    DisplayCheckout();
+                    DisplayCurrentTotal();
                     Console.WriteLine();
                     DisplayCartOptions();
                     break;
@@ -94,7 +94,7 @@ namespace RefactorDemo
             {
                 Console.WriteLine($"|   {product.Name}   |   {product.Price}  |");
             }
-            Console.WriteLine("------------------");
+            Console.WriteLine("---------------------");
 
         }
 
@@ -114,9 +114,11 @@ namespace RefactorDemo
             {
                 case 1:
                     AddToCartPrompt();
+                    Console.Clear();
                     GenericMenu();
                     break;
                 case 2:
+                    Console.Clear();
                     MainMenu();
                     break;
             }
@@ -139,9 +141,11 @@ namespace RefactorDemo
 
 
                 Console.Write("How many?: ");
-                int amountToAdd = Convert.ToInt32(Console.ReadLine());
+                string amountToAdd = Console.ReadLine();
+                int properAmountToAdd = ProperValChecker(amountToAdd);
 
-                productToAdd.Amount = amountToAdd;
+
+                productToAdd.Amount = properAmountToAdd;
 
                 shoppingCartDao.AddToCart(productToAdd);
 
@@ -184,7 +188,7 @@ namespace RefactorDemo
                 properYesNo = ProperYesNoChecker(yesNo);
 
 
-            } while (properYesNo == "y");
+            } while (properYesNo.ToLower() == "y");
 
         }
 
@@ -193,19 +197,30 @@ namespace RefactorDemo
             Console.WriteLine("Please choose from the following options: ");
             Console.WriteLine("1 - Cart/Checkout");
             Console.WriteLine("2 - Main Menu");
+            Console.WriteLine("3 - Grocery Menu");
+            Console.WriteLine();
+            Console.Write("Your choice?: ");
 
-            int userInput = Convert.ToInt32(Console.ReadLine());    
+            string userInput = Console.ReadLine();
+            int properUserInput = ProperValChecker(userInput, 3);
 
-            switch (userInput) { 
-                case 1: 
+            switch (properUserInput) { 
+                case 1:
+                    Console.Clear();
                     DisplayCart();
                     Console.WriteLine();
-                    DisplayCheckout();
+                    DisplayCurrentTotal();
                     Console.WriteLine();
                     DisplayCartOptions();
                     break;
                 case 2:
+                    Console.Clear();
                     MainMenu();
+                    break;
+                case 3:
+                    Console.Clear();
+                    GroceryDisplayMain();
+                    GroceryDisplayOptions();
                     break;
             }
            
@@ -215,50 +230,68 @@ namespace RefactorDemo
         {
             List<Product> cart = shoppingCartDao.GetCart();
 
-            Console.WriteLine("Your Cart");
-            Console.WriteLine("|Name -- Price -- Amount|");
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("|             Your Cart            |");
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("|   Name   |   Price   |   Amount  |");
+            Console.WriteLine("------------------------------------");
 
             foreach (Product product in cart)
             {
-                Console.WriteLine($"|{product.Name} | {product.Price} | {product.Amount}|");
+                Console.WriteLine($"|   {product.Name}   |   {product.Price}   |      {product.Amount}      |");
             }
 
         }
 
-        public void DisplayCheckout()
+        public void DisplayCurrentTotal()
         {
             decimal currentTotal = shoppingCartDao.GetCheckoutPrice();
 
-            Console.WriteLine($"Your current total: {currentTotal}");
+             Console.WriteLine("--------------------------------------");
+            Console.WriteLine($"| Your current total: {currentTotal} |");
+             Console.WriteLine("--------------------------------------");
         }
 
         public void DisplayCartOptions()
         {
             Console.WriteLine("Please choose from the following options: ");
-            Console.WriteLine("1 - Add new item (Groceries menu)");
-            Console.WriteLine("2 - Add more of an item");
+            Console.WriteLine("1 - Add new item (groceries menu)");
+            Console.WriteLine("2 - Increase amount of an item");
             Console.WriteLine("3 - Decrease/remove item from cart");
             Console.WriteLine("4 - Go to checkout");
 
             Console.WriteLine();
 
-            Console.WriteLine("What's your choice?: ");
+            Console.Write("What's your choice?: ");
 
-            int userInput = Convert.ToInt32(Console.ReadLine());
+            string userInput = Console.ReadLine();
 
-            switch (userInput) {
+            int properUserInput = ProperValChecker(userInput, 4);
+
+            switch (properUserInput) {
                 case 1:
+                    Console.Clear();
                     GroceryDisplayMain();
                     GroceryDisplayOptions();
                     break;
                 case 2:
                     AddToCartPrompt();
+                    Console.Clear();
+                    DisplayCart();
+                    DisplayCurrentTotal();
+                    DisplayCartOptions();
                     break;
                 case 3:
                     RemoveFromCartPrompt();
+                    Console.Clear();
+                    DisplayCart();
+                    DisplayCurrentTotal();
+                    DisplayCartOptions();
                     break;
                 case 4:
+                    Console.Clear();
                     CheckoutDisplay();
+                    CheckoutPrompts();
                     break;
 
             }
@@ -279,19 +312,36 @@ namespace RefactorDemo
         public void CheckoutDisplay()
         {
             decimal currentTotal = shoppingCartDao.GetCheckoutPrice();
-            Console.WriteLine($"Your final total: {currentTotal}");
+             Console.WriteLine("------------------------------------");
+            Console.WriteLine($"| Your final total: {currentTotal} |");
+             Console.WriteLine("------------------------------------");
         }
 
-
-       /* public void ExitWithoutCheckout()
+        public void CheckoutPrompts()
         {
-            decimal checkoutPrice = shoppingCartDao.GetCheckoutPrice();
-
-            if (checkoutPrice == 0)
+            Console.WriteLine("Will you be paying by cash or card?");
+            Console.WriteLine("1 - Cash");
+            Console.WriteLine("2 - Card");
+            string userInput = Console.ReadLine();
+            int properUserInput = ProperValChecker(userInput, 2);
+            switch (properUserInput)
             {
-                DisplayExit();
+                case 1:
+                    Console.Clear();
+                    DisplayLoadingScreen();
+                    Console.WriteLine("Success!");
+                    Console.WriteLine();
+                    DisplayExit();
+                    break;
+                case 2:
+                    Console.Clear();
+                    DisplayLoadingScreen();
+                    Console.WriteLine("Success!");
+                    Console.WriteLine();
+                    DisplayExit();
+                    break;
             }
-        }*/
+        }
 
 
         // User can leave if their checkout price is zero
@@ -299,15 +349,34 @@ namespace RefactorDemo
         {
             if (shoppingCartDao.GetIsCartEmpty())
             {
-                Console.WriteLine("3 - Don't have anything in the cart? Exit here");
+                Console.WriteLine("3 - You currently don't have any items in your cart. Quick exit here");
             }
+            
+        }
 
+        public void DisplayLoadingScreen()
+        {
+            int counter = 0;
+            string processing = "Processing";
+
+            while (counter < 4)
+            {
+                Console.Clear();
+                processing +=  ".";
+                Console.WriteLine($"{processing}");
+                counter++;
+                Thread.Sleep(1000);
+
+            }
+            
         }
 
         public void DisplayExit()
         {
-            Console.WriteLine("Thanks for choosing Nick's Grocery store - come again!");
-            Thread.Sleep(300);
+            Console.WriteLine("----------------------------------------------------------");
+            Console.WriteLine("| Thanks for choosing Nick's Grocery store - come again! |");
+            Console.WriteLine("----------------------------------------------------------");
+            Thread.Sleep(3000);
             Environment.Exit(0);
         }
 
@@ -323,7 +392,7 @@ namespace RefactorDemo
             
             List<Product> cart = shoppingCartDao.GetCart();
 
-            Product cartItem = cart.SingleOrDefault(product => product.Name == userInput);
+            Product cartItem = cart.SingleOrDefault(product => product.Name.ToLower() == userInput.ToLower());
 
             while (cartItem == null)
             {
@@ -342,7 +411,7 @@ namespace RefactorDemo
 
             List<Product> selection = shoppingCartDao.GetSelection();
 
-            Product selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
+            Product selectionItem = selection.SingleOrDefault(product => product.Name.ToLower() == userInput.ToLower());
 
             while (selectionItem == null)
             {
@@ -357,8 +426,8 @@ namespace RefactorDemo
 
 
 
-        // Checks if user's number input is valid 
-        public int ProperValChecker(string userInput, int upperRangeInclusive)
+        // Checks if user's number input is valid. UpperRangeInclusive = optional paramater
+        public int ProperValChecker(string userInput, int upperRangeInclusive = Int32.MaxValue)
         {
             bool isProperValue = false;
             int parsedValue = 0;
@@ -372,9 +441,14 @@ namespace RefactorDemo
                     Console.Write("Input was not a number. Please try again: ");
                     userInput = Console.ReadLine();
                 }
+                else if (parsedValue <= 0)
+                {
+                    Console.WriteLine("Input was too low. Please try again");
+                    userInput = Console.ReadLine();
+                }
                 else if (parsedValue > upperRangeInclusive)
                 {
-                    Console.Write("Input was not a valid number. Please try again: ");
+                    Console.Write("Input was not in range. Please try again: ");
                     userInput = Console.ReadLine();
                 }
                 else
