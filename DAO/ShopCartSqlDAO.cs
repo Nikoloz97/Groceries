@@ -10,13 +10,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace RefactorDemo.DAO
 {
-    // TODO: Get rid of Id property for product altogether? (is it necessary - name is already unique)
     public class ShopCartSqlDAO: IShopCartDAO
     {
-        // Modifyable cart list
-        private List<Product> cart = new List<Product>();
+        // Users's cart list
+        public List<Product> cart = new List<Product>();
 
-        // Non-modifyable selection from database
+        // Selection from database
         internal List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
@@ -40,6 +39,7 @@ namespace RefactorDemo.DAO
             return cart;
         }
 
+      
         public Product GetProductFromCart(string productName)
         {
             Product cartProduct = cart.SingleOrDefault(x => x.Name == productName);
@@ -90,24 +90,24 @@ namespace RefactorDemo.DAO
         public void AddToCart(Product_Transfer productToAdd)
         {
             // If item is already in the cart, just increment the "amount" property 
-            Product cartProduct = cart.SingleOrDefault(x => x.Name == productToAdd.Name);
+            Product product_one = GetProductFromCart(productToAdd);
 
-            if (cartProduct != null)
+            if (product_one != null)
             {
-                cartProduct.Amount += productToAdd.Amount;
+                product_one.Amount += productToAdd.Amount;
             } 
 
             // Else, add the selection to cart 
             else {
 
             // Get corresponding item from selection
-             Product product = GetProductFromSelection(productToAdd);
+             Product product_two = GetProductFromSelection(productToAdd);
 
             // Increment the amount property
-             product.Amount += productToAdd.Amount;
+             product_two.Amount += productToAdd.Amount;
 
             // Add to cart
-             cart.Add(product);
+             cart.Add(product_two);
 
              // Cart is not empty, so set to false
              isCartEmpty = false;

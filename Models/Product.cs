@@ -6,6 +6,7 @@ namespace RefactorDemo.Models
 {
     public class Product
     {
+    
         // Products in the cart/selection list
 
         // Created getters/setters
@@ -14,5 +15,19 @@ namespace RefactorDemo.Models
         public decimal Price { get; set; }
         // Amount property = just used for when displaying the items to user (see UI_Main) 
         public int Amount { get; set; }
+
+
+        // Constructor for unit tests
+        public Product(int id, string name, decimal price, int amount)
+        {
+            Id = id;
+            Name = name;
+            Price = price;
+            Amount = amount;
+        }
+
+        public Product()
+        {
+        }
     }
 }
