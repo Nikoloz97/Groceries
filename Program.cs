@@ -1,4 +1,5 @@
 ﻿using RefactorDemo.DAO;
+using RefactorDemo.UI;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,9 +21,11 @@ namespace RefactorDemo
             IShopCartDAO shoppingCartDao = new ShopCartSqlDAO(connectionString);
 
 
-            UI_Main ui = new UI_Main(shoppingCartDao);
+            UI_Main uiMain = new UI_Main(shoppingCartDao);
 
-            ui.MainMenu();
+          
+
+            uiMain.MainMenu();
 
         }
     }

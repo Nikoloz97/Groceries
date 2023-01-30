@@ -10,6 +10,8 @@ namespace RefactorDemo.DAO
     public interface IShopCartDAO
     {
         bool GetIsCartEmpty();
+        public Product GetProductFromCart(string productName);
+
         List<Product> GetCart();
 
         decimal GetCheckoutPrice();

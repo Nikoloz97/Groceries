@@ -17,7 +17,7 @@ namespace RefactorDemo.DAO
         private List<Product> cart = new List<Product>();
 
         // Non-modifyable selection from database
-        private List<Product> selection = new List<Product>();
+        internal List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
 
@@ -40,7 +40,11 @@ namespace RefactorDemo.DAO
             return cart;
         }
 
-   
+        public Product GetProductFromCart(string productName)
+        {
+            Product cartProduct = cart.SingleOrDefault(x => x.Name == productName);
+            return cartProduct;
+        }
 
         // For each product in product list, adds price properties and returns a sum of product prices
         public decimal GetCheckoutPrice()
@@ -53,9 +57,14 @@ namespace RefactorDemo.DAO
             return price;
         }
 
+
+
         // Provides full selection of products from database
         public List<Product> GetSelection()
         {
+            if (selection.Count == 0)
+            {
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -69,6 +78,10 @@ namespace RefactorDemo.DAO
                     selection.Add(product);
                 }
             }
+
+
+            }
+
             return selection;
         }
 
@@ -127,18 +140,6 @@ namespace RefactorDemo.DAO
 
                 }
 
-            }
-
-            // else, if amount to decrease is greater than amount property, display error message
-            else if (product.Amount < productToRemove.Amount)
-            {
-                Console.WriteLine("Woops - you can't decrease by more than what's in your cart. Try again.");
-            }
-
-            // else, if product cannot be found, display error message
-            else if (product == null)
-            {
-                Console.WriteLine("Woops - couldn't find item. Try again.");
             }
         }
 

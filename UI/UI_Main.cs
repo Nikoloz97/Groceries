@@ -15,16 +15,17 @@ namespace RefactorDemo
     public class UI_Main
     {
         private readonly IShopCartDAO shoppingCartDao;
-        UI_Helper helper = new UI_Helper();
+        readonly UI_Helper helper;
+
 
         // Constructor
         public UI_Main(IShopCartDAO shoppingCartDao)
         {
             this.shoppingCartDao = shoppingCartDao;
+            this.helper = new UI_Helper(this.shoppingCartDao);
         }
 
 
-        // TODO: Complete switch statement
         public void MainMenu()
         {
             // Main menu display
@@ -102,11 +103,14 @@ namespace RefactorDemo
             Console.WriteLine("Please choose from the following options: ");
             Console.WriteLine("1 - Add item to cart");
             Console.WriteLine("2 - Return to main menu");
+            Console.WriteLine();
+            Console.Write("What's your choice?: ");
 
-            // TODO: add properCartNameChecker
-            int userinput = Convert.ToInt32(Console.ReadLine());  
+            string userInput = Console.ReadLine();
 
-            switch (userinput) 
+            int properUserInput = ProperValChecker(userInput, 2);
+            
+            switch (properUserInput) 
             {
                 case 1:
                     AddToCartPrompt();
@@ -120,36 +124,40 @@ namespace RefactorDemo
 
         public void AddToCartPrompt()
         {
-            string continueAdding;
+            string properYesNo;
 
             do
             {
-                Product_Transfer productToRemove = new Product_Transfer();
+                Product_Transfer productToAdd = new Product_Transfer();
 
                 Console.Write("What would you like to add?: ");
-                string itemToAdd = Console.ReadLine();
+                string itemName = Console.ReadLine();
+                // Helper problem here
+                string properItemName = helper.ProperNameChecker_Selection(itemName);
 
-                productToRemove.Name = itemToAdd;
+                productToAdd.Name = properItemName;
 
 
                 Console.Write("How many?: ");
                 int amountToAdd = Convert.ToInt32(Console.ReadLine());
 
-                productToRemove.Amount = amountToAdd;
+                productToAdd.Amount = amountToAdd;
 
-                shoppingCartDao.AddToCart(productToRemove);
+                shoppingCartDao.AddToCart(productToAdd);
 
                 Console.Write("Would you like to add anything else? (y/n) ");
-                continueAdding = Console.ReadLine().ToLower();
+                string yesNo = Console.ReadLine();
+                properYesNo = ProperYesNoChecker(yesNo);
 
-            } while (continueAdding == "y");
+
+            } while (properYesNo == "y");
 
          
         }
 
         public void RemoveFromCartPrompt()
         {
-            string continueRemoving;
+            string properYesNo;
 
             do
             {
@@ -158,20 +166,25 @@ namespace RefactorDemo
                 Console.Write("What would you like to remove?: ");
                 string itemToRemove = Console.ReadLine();
 
-                productToRemove.Name = itemToRemove;
+                string properItemToRemove = ProperNameChecker_Selection(itemToRemove);
+
+                productToRemove.Name = properItemToRemove;
 
 
                 Console.Write("How many?: ");
-                int amountToRemove = Convert.ToInt32(Console.ReadLine());
+                string amountToRemove = Console.ReadLine();
+                int properAmountToRemove = ProperToRemoveChecker(amountToRemove, productToRemove.Name);
 
-                productToRemove.Amount = amountToRemove;
+                productToRemove.Amount = properAmountToRemove;
 
-                shoppingCartDao.AddToCart(productToRemove);
+                shoppingCartDao.RemoveFromCart(productToRemove);
 
                 Console.Write("Would you like to remove anything else? (y/n) ");
-                continueRemoving = Console.ReadLine().ToLower();
+                string yesNo = Console.ReadLine();
+                properYesNo = ProperYesNoChecker(yesNo);
 
-            } while (continueRemoving == "y");
+
+            } while (properYesNo == "y");
 
         }
 
@@ -347,11 +360,12 @@ namespace RefactorDemo
         // Checks if user's number input is valid 
         public int ProperValChecker(string userInput, int upperRangeInclusive)
         {
-            int properValue = 0;
+            bool isProperValue = false;
+            int parsedValue = 0;
 
-            while (properValue == 0)
+            while (!isProperValue)
             {
-                bool isParsed = int.TryParse(userInput, out int parsedValue);
+                bool isParsed = int.TryParse(userInput, out parsedValue);
 
                 if (!isParsed)
                 {
@@ -365,13 +379,64 @@ namespace RefactorDemo
                 }
                 else
                 {
-                    properValue = parsedValue;
+                    isProperValue = true;
                 }
 
             }
 
-            return properValue;
+            return parsedValue;
 
+        }
+
+        public string ProperYesNoChecker(string userInput)
+        {
+            bool validUserInput = false;
+
+            do
+            {
+                if (userInput.ToLower() != "y" && userInput.ToLower() != "n")
+                {
+                    Console.Write("Not a valid input. Try again: ");
+                    userInput = Console.ReadLine();
+                }
+                else
+                {
+                    validUserInput = true;
+                }
+
+            } while (!validUserInput);
+
+            return userInput;
+        }
+
+        public int ProperToRemoveChecker(string amountToRemove, string productName)
+        {
+            bool isProperValue = false;
+            int parsedValue = 0;
+            Product product = shoppingCartDao.GetProductFromCart(productName);
+
+            while (!isProperValue)
+            {
+                bool isParsed = int.TryParse(amountToRemove, out parsedValue);
+
+                if (!isParsed)
+                {
+                    Console.Write("Input was not a number. Please try again: ");
+                    amountToRemove = Console.ReadLine();
+                }
+                else if (parsedValue > product.Amount)
+                {
+                    Console.Write("Input was too high of a number. Please try again: ");
+                    amountToRemove = Console.ReadLine();
+                }
+                else
+                {
+                    isProperValue = true;
+                }
+
+            }
+
+            return parsedValue;
         }
 
 

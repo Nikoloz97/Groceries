@@ -15,7 +15,12 @@ namespace RefactorDemo.UI
     {
         private readonly IShopCartDAO shoppingCartDao;
 
-        public string ProperCartItemName (string userInput)
+        public UI_Helper(IShopCartDAO shoppingCartDao)
+        {
+            this.shoppingCartDao = shoppingCartDao;
+        }
+
+        /*public string ProperCartItemName (string userInput)
         {
             // Don't know why this is null... 
             List<Product> cart = shoppingCartDao.GetCart();
@@ -30,6 +35,23 @@ namespace RefactorDemo.UI
             }
 
             return cartItemName.Name;
+        }
+*/
+        public string ProperNameChecker_Selection(string userInput)
+        {
+
+            List<Product> selection = shoppingCartDao.GetSelection();
+
+            Product selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
+
+            while (selectionItem == null)
+            {
+                Console.Write("Invalid item name. Try again: ");
+                userInput = Console.ReadLine();
+                selectionItem = selection.SingleOrDefault(product => product.Name == userInput);
+            }
+
+            return selectionItem.Name;
         }
 
     }
