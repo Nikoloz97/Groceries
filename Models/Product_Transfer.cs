@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace RefactorDemo.Models
@@ -12,5 +13,17 @@ namespace RefactorDemo.Models
 
         // This is to increment/decrement corresponding Product
         public int Amount { get; set; }
+
+
+        // Constructor for unit tests
+        public Product_Transfer(string name, int amount)
+        {
+            this.Name = name;
+            this.Amount = amount;
+        }
+
+        public Product_Transfer()
+        {
+        }
     }
 }

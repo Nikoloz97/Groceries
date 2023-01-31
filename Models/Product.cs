@@ -20,10 +20,10 @@ namespace RefactorDemo.Models
         // Constructor for unit tests
         public Product(int id, string name, decimal price, int amount)
         {
-            Id = id;
-            Name = name;
-            Price = price;
-            Amount = amount;
+            this.Id = id;
+            this.Name = name;
+            this.Price = price;
+            this.Amount = amount;
         }
 
         public Product()
