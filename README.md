@@ -15,9 +15,9 @@ The overall objective of this exercise is to gauge your level of understanding a
 
 ## General
 
-Created an application called "Nick's Grocery Store" where a user can navigate between main, grocery, cart, and checkout screens. At the grocery menu, user can: 1. see a selection of items (gathered from a SQL database), and 2. Add items to their virtual "cart". In the cart menu, user can: 1. see their cart items and current total, 2. Add more of an item currently in their cart, and 3. Decrease amount or remove item entirely from cart. Finally, in the checkout screen, user has an option to pay their final total either by cash or card, and is taken to a processing/exit screen.
+Created an application called "Nick's Grocery Store" where a user can navigate between main, grocery, cart, and checkout screens. At the grocery menu, user can: 1. see a selection of items (gathered from a SQL database), and 2. Add items to their virtual "cart". In the cart menu, user can: 1. see their cart items and current total, 2. Add more of an item currently in their cart, and 3. Decrease amount or remove item from cart. Finally, in the checkout screen, user has an option to pay their final total either by cash or card, and is taken to a processing/exit screen.
 
-Overall solution organization: Program.cs, Logger.cs, 3 directories - 1. DAO, 2. Models, 3. UI. Program file holds the connectionString and begins running the program. DAO directory holds ShopCartSqlDAO and interface, Models holds Products (as found in cart/selection) and Product_Transfer (as created by userInput), and UI holds the user interface, and most of the defensive coding checks.
+Overall solution organization: Program.cs, Logger.cs, 3 directories (DAO, Models, UI). Program file holds the connectionString and begins running the program. DAO directory holds ShopCartSqlDAO and interface, Models directory holds Products (as found in cart/selection) and Product_Transfer (as created by userInput) classes, and UI directory holds the user interface, where most of the defensive coding checks are found.
 
 ## Objectives completed:
 
