@@ -16,7 +16,7 @@ namespace RefactorDemo.DAO
         public List<Product> cart = new List<Product>();
 
         // Selection from database
-        internal List<Product> selection = new List<Product>();
+        public List<Product> selection = new List<Product>();
 
         private readonly string connectionString;
 
