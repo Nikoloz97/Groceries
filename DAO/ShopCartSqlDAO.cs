@@ -155,7 +155,7 @@ namespace RefactorDemo.DAO
 
 
         // Get product from selection list (used to add to cart)
-        private Product GetProductFromSelection(Product_Transfer productMod)
+        public Product GetProductFromSelection(Product_Transfer productMod)
         {
             Product productFromSelection = selection.SingleOrDefault(x => x.Name == productMod.Name);
 
@@ -163,7 +163,7 @@ namespace RefactorDemo.DAO
         }
 
         // Get product from cart list (used to remove from cart)
-        private Product GetProductFromCart(Product_Transfer productMod)
+        public Product GetProductFromCart(Product_Transfer productMod)
         {
             Product productFromSelection = cart.SingleOrDefault(x => x.Name == productMod.Name);
 

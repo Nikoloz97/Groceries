@@ -22,6 +22,11 @@ namespace RefactorDemo.Models
             this.Amount = amount;
         }
 
+        public Product_Transfer(string name)
+        {
+            this.Name = name;
+        }
+
         public Product_Transfer()
         {
         }
