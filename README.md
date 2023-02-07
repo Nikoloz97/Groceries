@@ -36,7 +36,7 @@ Overall solution organization: Program.cs, Logger.cs, 3 directories (DAO, Models
 - Learn more about repository pattern (Entity framework)
 - Learn more about integration testing via xUnit testing (see Database Fixture file in tests)
 - Create admin option (can modify SQL database directly)
-- Complete moving functions from UI_main -> UI_helper (improve level of abstraction)
+- Complete moving functions from UI_main -> UI_helper 
 - Create logger (produces a .txt file of user history (i.e. adding/removing items from cart))
 
 ## Takeaways:
